@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-api
+  namespace: rag-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-api
+  template:
+    metadata:
+      labels:
+        app: rag-api
+    spec:
+      containers:
+      - name: rag-api
+        image: 821868546349.dkr.ecr.eu-central-1.amazonaws.com/rag-api:v2
+        ports:
+        - containerPort: 8000
+        env:
+          - name: WEAVIATE_URL
+            valueFrom:
+              secretKeyRef:
+                name: weaviate-url  
+                key: WEAVIATE_URL
+
+          - name: S3_ENDPOINT_URL
+            valueFrom:
+              secretKeyRef:
+                name: s3-endpoint-url 
+                key: S3_ENDPOINT_URL
+
+          - name: WORKER_URL
+            valueFrom:
+                secretKeyRef:
+                  name: worker-url  
+                  key: WORKER_URL
+
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+                secretKeyRef: 
+                  name: aws-access-key-id 
+                  key: AWS_ACCESS_KEY_ID
+
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+                secretKeyRef:
+                  name: aws-secret-access-key
+                  key: AWS_SECRET_ACCESS_KEY
+
+          - name: COHERE_API_KEY
+            valueFrom:
+                secretKeyRef:
+                  name: cohere-api-key
+                  key: COHERE_API_KEY                                         

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-minio
+  namespace: rag-workers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-minio
+  template:
+    metadata:
+      labels:
+        app: rag-minio
+    spec:
+      containers:
+      - name: rag-minio
+        image: minio/minio
+        ports:
+        - containerPort: 9000
+        - containerPort: 9001
+        env:
+          - name: MINIO_ROOT_USER
+            valueFrom:
+                secretKeyRef:
+                  name: minio-root-user 
+                  key: MINIO_ROOT_USER
+
+          - name: MINIO_ROOT_PASSWORD
+            valueFrom:
+                secretKeyRef:
+                  name: minio-root-password 
+                  key: MINIO_ROOT_PASSWORD
+        
+  
+
+        command: ["minio", "server", "/data", "--console-address", ":9001"]
+        volumeMounts:
+        - name: minio-data
+          mountPath: /data
+      volumes:
+      - name: minio-data
+        emptyDir: {}
+
+

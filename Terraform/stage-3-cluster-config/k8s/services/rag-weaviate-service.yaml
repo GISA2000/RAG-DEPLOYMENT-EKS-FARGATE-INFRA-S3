@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-weaviate
+  namespace: rag-workers
+spec:
+  type: ClusterIP
+  selector:
+    app: rag-weaviate
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+  - name: grpc
+    protocol: TCP
+    port: 50051
+    targetPort: 50051

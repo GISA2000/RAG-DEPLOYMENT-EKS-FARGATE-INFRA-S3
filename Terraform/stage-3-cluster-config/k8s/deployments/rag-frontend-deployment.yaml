@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-frontend
+  namespace: rag-frontend
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-frontend
+  template:
+    metadata:
+      labels:
+        app: rag-frontend
+    spec:
+      containers:
+      - name: rag-frontend
+        image: 821868546349.dkr.ecr.eu-central-1.amazonaws.com/rag-frontend:v2
+        ports:
+        - containerPort: 8501
+        env:
+          - name: API_URL
+            valueFrom:
+                secretKeyRef:
+                  name: api-url   
+                  key: API_URL
