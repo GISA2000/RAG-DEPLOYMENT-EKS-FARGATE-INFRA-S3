@@ -12,9 +12,9 @@ At the end of this instruction, you will have the following that you can use:
 - LLM (Large Language Model) checks in place to not answer on inappropriate/illegal questions,
 - Ask questions in different languages Like Dutch or English,
 
-##TEST 1 
+## TEST 1 
 
-##TEST 2 
+## TEST 2 
 
-##TEST 3
+## TEST 3
 
