@@ -12,9 +12,14 @@ At the end of this instruction, you will have the following that you can use:
 - LLM (Large Language Model) checks in place to not answer on inappropriate/illegal questions,
 - Ask questions in different languages Like Dutch or English,
 
-## TEST 1 
+## prerequisite for deployment RAG on AWS
 
-## TEST 2 
+In order to successfully apply RAG within your AWS environment, its application has been divided into the stages below. Each stage must be completed in order for the RAG Chatbot to become functional. Make sure you have the following before you start applying RAG, otherwise you will not be able to follow the steps in these instructions. 
 
-## TEST 3
+- [ ] AWS CLI installed and loged in with you AWS profile,
+- [ ] Terraform installed and configured,
+- [ ] Installed kubectl to interact with the Kubernetes cluster,
+- [ ] Helm installed to install Kubernetes packages,
 
+
+  
