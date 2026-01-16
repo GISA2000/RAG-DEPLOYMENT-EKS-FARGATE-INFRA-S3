@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: rag-worker
-        image: 821868546349.dkr.ecr.eu-central-1.amazonaws.com/rag-worker:v2
+        image: ghcr.io/gisa2000/rag-worker:v1
         ports:
         - containerPort: 8001
         env:

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: rag-api
-        image: 821868546349.dkr.ecr.eu-central-1.amazonaws.com/rag-api:v2
+        image: ghcr.io/gisa2000/rag-api:v1
         ports:
         - containerPort: 8000
         env:

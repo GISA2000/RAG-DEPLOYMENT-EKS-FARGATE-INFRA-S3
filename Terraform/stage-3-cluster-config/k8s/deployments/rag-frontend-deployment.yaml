@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: rag-frontend
-        image: 821868546349.dkr.ecr.eu-central-1.amazonaws.com/rag-frontend:v2
+        image: ghcr.io/gisa2000/rag-frontend:v1
         ports:
         - containerPort: 8501
         env:
