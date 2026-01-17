@@ -196,6 +196,28 @@ TEST SUITE: None
 NOTES:
 AWS Load Balancer controller installed!
 ```
+Now EKS/Fargate should create a pod and apply the  Load-Balencer-Controller on the cluster. 
+To verify naviate back to the cluster and go to the **Resources** tab and click on **Deployments**. You must see the controller now like the example below you. 
+
+<img width="1181" height="318" alt="image" src="https://github.com/user-attachments/assets/72f7811a-af6d-4baa-a8ce-7ab602a30985" />
+
+10 Import Kubernetes Secret to the cluster. 
+
+To prevent hardcoding Kubernetes secrets is used to deploy RAG so that sensitive information cannot be exposed in the Kubernetes deployment files. 
+Next the **"rag-secrets.yaml"** file must be configured with the right secrets and so that it can be imported into the cluster. The Cluser will later use the secrets to provide the RAG pods the data it needs to let all the RAG microservices talk to each other.
+
+First go the cohere webiste and [request a API key](https://dashboard.cohere.com/). 
+
+Next navigate to the **"rag-secrets.yaml"** and open the file so you can edit it. Make sure that you edit the following based on the table below. 
+
+
+
+
+
+
+
+
+
 
 
 
