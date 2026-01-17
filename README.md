@@ -376,6 +376,13 @@ After you have done the steps above the VPC ass well ass the EKS Kubernetes clus
 >[!WARNING]
 > Do not forget the perform the manual deletion steps by steps 3-5. Failing to do so will result that Terraform Destroy will get stuck in a destroy loop!!!
 
+After Terraform is done, you will get a output back in your ternimal that 48 resources are destroyed.
+
+```hcl
+Destroy complete! Resources: 48 destroyed.
+```
+
+
 
 
 
