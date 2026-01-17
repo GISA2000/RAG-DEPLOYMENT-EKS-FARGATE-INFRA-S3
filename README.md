@@ -307,6 +307,10 @@ Please go to **"EC2>Load balancers"**  you must see at least one ALB that the in
 
 <img width="1912" height="821" alt="image" src="https://github.com/user-attachments/assets/bf40362e-8c57-4f94-97ac-64705d8f1605" />
 
+>[!IMPORTANT]
+> The Load-Balancer state must be **"Ready"** if the state is **"Provisioning"** just wait for 5 minutes.
+> The frontend is only available after the state is set to **"Ready"**
+
 The ALB als made a **"Target group"** that allow the ALB only to send traffic the **"rag-frontend pod"**. 
 
 15. Navigate to the front end
