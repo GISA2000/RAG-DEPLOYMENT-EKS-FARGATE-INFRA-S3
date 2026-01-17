@@ -156,7 +156,9 @@ NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP   44m
 ```
 > [!NOTE]
-> If the command above fails, make sure that that you are logged in with your AWS account and that Kubectl is installed on your machine. 
+> If the command above fails, make sure that that you are logged in with your AWS account and that Kubectl is installed on your machine.
+
+## Chapter 3 Cluster configuration
 
 9. Next the Load-Balencer-controller must be installed on the cluster it self.
 
@@ -201,7 +203,7 @@ To verify naviate back to the cluster and go to the **Resources** tab and click 
 
 <img width="1181" height="318" alt="image" src="https://github.com/user-attachments/assets/72f7811a-af6d-4baa-a8ce-7ab602a30985" />
 
-10 Import Kubernetes Secret to the cluster. 
+10. Import Kubernetes Secret to the cluster. 
 
 To prevent hardcoding Kubernetes secrets is used to deploy RAG so that sensitive information cannot be exposed in the Kubernetes deployment files. 
 Next the **"rag-secrets.yaml"** file must be configured with the right secrets and so that it can be imported into the cluster. The Cluser will later use the secrets to provide the RAG pods the data it needs to let all the RAG microservices talk to each other.
@@ -209,6 +211,130 @@ Next the **"rag-secrets.yaml"** file must be configured with the right secrets a
 First go the cohere webiste and [request a API key](https://dashboard.cohere.com/). 
 
 Next navigate to the **"rag-secrets.yaml"** and open the file so you can edit it. Make sure that you edit the following based on the table below. 
+
+| Secret                | Value                                                  |
+|-----------------------|--------------------------------------------------------|
+| WEAVIATE_URL          | http://rag-weaviate.rag-workers.svc.cluster.local:8080 |
+| WORKER_URL            | http://rag-worker.rag-workers.svc.cluster.local:8001   |
+| S3_ENDPOINT_URL       | http://rag-minio.rag-workers.svc.cluster.local:9000    |
+| AWS_ACCESS_KEY_ID     | CREATE STRONG ID YOURSELF                              |
+| AWS_SECRET_ACCESS_KEY | CREATE STRONG KEY YOURSELF                             |
+| COHERE_API_KEY        | PUT YOU REQUEST API KEY HERE                           |
+| API_URL               | http://rag-api.rag-api.svc.cluster.local:8000          |
+| MINIO_ROOT_USER       | PUT HERE YOUR AWS_ACCESS_KEY_ID                     |
+| MINIO_ROOT_PASSWORD   | PUY HERE YOUR AWS_SECRET_ACCESS_KEY                        |
+
+> [!CAUTION]
+> NEVER USE HTTP FOR PRODUCUTION!!! ANYONE WITH A NETWORK SNIFFER WILL ABLE TO LISTEN TO POD TRAFFIC IF SOMEONE GET ACCESS TO THE KUBERNETES CLUSTER.
+> THE HTTP ENPOINTS ABOVE YOU ARE ONLY FOR TESTING PURPUSES ONLY
+
+11. Importing the above secrets and namespaces to the EKS cluster.
+
+Before anything can be deployed, Namespaces and Secrets must be present on the cluster before RAG can be deployed. 
+
+First navigate to **"stage-3-cluster-config"** 
+
+```bash
+cd ..
+cd .\stage-3-cluster-config\  
+```
+First import alle namespaces. 
+
+```bash
+kubectl apply -f .\k8s\namespaces\namespaces.yaml
+```
+After this, import all secrets to the cluster. 
+
+```bash
+kubectl apply -f .\k8s\secrets\rag-secrets.yaml -n rag-api
+
+kubectl apply -f .\k8s\secrets\rag-secrets.yaml -n rag-workers
+
+kubectl apply -f .\k8s\secrets\rag-secrets.yaml -n rag-frontend
+
+kubectl apply -f .\k8s\secrets\rag-secrets.yaml -n rag-monitoring
+```
+If the import worked, then you must get the ouput below for each secret that you are importing.
+
+```hcl
+secret/weaviate-url created
+secret/s3-endpoint-url created
+secret/worker-url created
+secret/aws-access-key-id created
+secret/aws-secret-access-key created
+secret/cohere-api-key created
+secret/api-url created
+secret/minio-root-user created
+secret/minio-root-password created
+```
+
+Now go back to the cluster. Click on the **"Resources"** tab therafter clikc on **"Cluster>Namespaces"**. All namespaces are now present on the cluster. 
+
+<img width="1506" height="710" alt="image" src="https://github.com/user-attachments/assets/1b9f9ea0-3d56-4f1c-bdc8-a1b909703343" />
+
+12. Configured the rest of the cluster with Terraform.
+
+The most manual work has now being done 👏🏽 now it is up to Terraform to automaticly apply the final cluster configuration. Terraform will configure the following in Stage 3:
+
+✅ Apply all Service, Ingress, and Deployments YALM files,<br>
+✅ Install CoreDNS for Kubernets so pods can talk to services,<br> 
+✅ Create a Kubernetes service account (Least-Priveleges) so it can create a ALB for the front-end,
+
+To begin the deployment apply the following command: 
+
+```hcl
+terraform inti
+terraform apply
+```
+> [!NOTE]
+> Make sure that you enter the above commands in the stage-3-cluster-config folder.
+
+After Terrraform is done, you will get the following output.
+```hcl 
+Apply complete! Resources: 11 added, 0 changed, 0 destroyed.
+```
+Cluster is now done with configuring. 
+
+13. verifying if all the pods are deployed.
+
+ If you go to Dpeloyments in the cluster secton of your cluster you should see that all pods are deployed. You should have the following pods like on the screenshot below.
+
+<img width="1324" height="660" alt="image" src="https://github.com/user-attachments/assets/8dcf1dc2-21ce-4c33-a1fb-73498c2a8332" />
+
+14. Check if the ALB has being created.
+
+Please go to **"EC2>Load balancers"**  you must see at least one ALB that the ingress file has created for the front end.  
+
+<img width="1912" height="821" alt="image" src="https://github.com/user-attachments/assets/bf40362e-8c57-4f94-97ac-64705d8f1605" />
+
+The ALB als made a **"Target group"** that allow the ALB only to send traffic the **"rag-frontend pod"**. 
+
+15. Navigate to the front end
+
+All components are installed, in order to navigate to the frontend we need to have the URL that AWS has auto created. To get this URL go back to the cluster and navigate to the **"Service and networking>Ingresses>rag-frontend-ingress"** the ingress section has a **"Load balancer URLs"** copy the URL and paste in your webbrowser. 
+
+<img width="1798" height="335" alt="image" src="https://github.com/user-attachments/assets/b9de2aeb-21a2-4906-97dc-e467b4381416" />
+
+You have know reached the front-end. congratulations 🎉 you have successfully installed RAG on your own AWS enviroment. Have fun 🥳
+
+<img width="1911" height="917" alt="image" src="https://github.com/user-attachments/assets/1799c866-0ec9-4fae-9ca8-133205898fcb" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
