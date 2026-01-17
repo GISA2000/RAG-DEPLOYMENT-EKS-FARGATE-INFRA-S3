@@ -96,7 +96,7 @@ Thanks to Stage 1, the necessary infrastructure has been implemented in AWS. The
 cd ..
 cd .\stage-2-cluster-creation\
 ```
-5. Peform Terraform Init and Apply just like you did in [chapter 1](##Chapter1:Stage1Infrastructurecreation).
+5. Peform Terraform Init and Apply just like you did in [chapter 1](#Chapter1:Stage1Infrastructurecreation).
 
 6. 
 
