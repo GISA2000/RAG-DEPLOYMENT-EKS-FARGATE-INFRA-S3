@@ -2,7 +2,7 @@
 
 Retrieval-augmented generation (RAG) is a way for AI to retrieve data from external sources and provide relevant information to the user based on that data. 
 
-We have developed an AI RAG chatbot system that is capable of analyzing documents and answering all kinds of questions about the document to the end user. Do you have a large document that needs to be reviewed, but don't have the time to do so? Or do you want a quick summary of something? Ask our AI RAG system and you will get the answer you need, saving you time. This Repository will explain how you can apply RAG in an AWS environment
+We have developed an AI RAG chatbot system that is capable of analyzing documents and answering all kinds of questions about the document to the end user. Do you have a large document that needs to be reviewed, but don't have the time to do so? Or do you want a quick summary of something? Ask our AI RAG system and you will get the answer you need, saving you time. This Repository will explain how you can apply RAG in an AWS environment.
 
 At the end of this instruction, you will have the following that you can use:
 
@@ -16,12 +16,12 @@ At the end of this instruction, you will have the following that you can use:
 
 In order to successfully apply RAG within your AWS environment, its application has been divided into the stages below. Each stage must be completed in order for the RAG Chatbot to become functional. Make sure you have the following before you start applying RAG, otherwise you will not be able to follow the steps in these instructions. 
 
-- [ ] [AWS CLI installed](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and loged in with you AWS profile,
+- [ ] [AWS CLI installed](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and logged in with you AWS profile,
 - [ ] [Terraform installed](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) and configured, 
 - [ ] Installed kubectl to interact with the Kubernetes cluster,
 - [ ] [Helm installed](https://helm.sh/docs/intro/install/) to install Kubernetes packages,
 
-For more information how to setup the above, please use the hyperlinks provide.
+For more information how to setup the above, please use the hyperlinks provided.
 
 ##  Chapter 1: Stage 1 Infrastructure creation 
 > [!WARNING]
@@ -53,7 +53,7 @@ RAG-DEPLOYMENT-EKS-FARGATE-INFRA-S3
                 ├───secrets
                 └───services
 ```
-2. Navigate to the “stage-1-vpc-creation” folder and run Terraform Init to prepare Terraform for automation.
+2. Navigate to the **“stage-1-vpc-creation”** folder and run Terraform Init to prepare Terraform for automation.
 ```
 terraform init
 ```
@@ -74,7 +74,7 @@ When Asked if you want to peform the actions, type yes and click on enter
 > If Terraform Apply fails, make sure that [AWS CLI is configured](https://docs.aws.amazon.com/signin/latest/userguide/command-line-sign-in.html) and that you are logged in.
 > 
 
-If you have not received any errors, you can proceed with the next steps. If you now go to the “AWS Management Console,” “rag-vpc” should appear.  
+If you have not received any errors, you can proceed with the next steps. If you now go to the “AWS Management Console,” **“rag-vpc”** should appear.  
 
 <img width="1665" height="247" alt="image" src="https://github.com/user-attachments/assets/c7c03e57-4e56-46f4-b5bf-b8d3c1721c90" />
 
@@ -96,6 +96,8 @@ Thanks to Stage 1, the necessary infrastructure has been implemented in AWS. The
 cd ..
 cd .\stage-2-cluster-creation\
 ```
+
+### Create the EKS Kubernetes cluster 
 5. Peform Terraform Init and Apply just like you did in [chapter 1](#chapter-1-stage-1-infrastructure-creation) by step 2 & 3.
 
 After this you should get a response back from Terraform that the cluster has being created like the example below: 
