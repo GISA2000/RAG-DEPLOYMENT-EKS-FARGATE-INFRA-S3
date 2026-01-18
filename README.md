@@ -338,9 +338,9 @@ With the help of two commands, the entire RAG environment can be removed with Te
 
 It is not possible to delete the whole infrastructure with one commmand. Therefor you need to apply Terraform Destroy twice, 1 time to delete the cluster and 1 time to delete the infrastructure on AWS. Some manual steps are necessary to delete some components in AWS because Terraform cannot destroy everything unfortunately. But all of this will be take care off in this chapter.  
 
-16. Delete the cluster it self.
+### Delete the cluster it self.
 
-Navigate to [**stage-2-cluster-creation**](Terraform/stage-2-cluster-creation) folder and apply Terraform Destroy to delete the cluster. 
+16. Navigate to [**stage-2-cluster-creation**](Terraform/stage-2-cluster-creation) folder and apply Terraform Destroy to delete the cluster. 
 
 ```hcl 
 terraform destroy
@@ -352,34 +352,34 @@ After this you should get the following output when the cluster is done deleting
 Destroy complete! Resources: 7 destroyed.
 ```
 
-17. Destroy the infrastructure on AWS.
+### Destroy the infrastructure on AWS.
 
-Navigate to [**stage-1-vpc-creation**](Terraform/stage-1-vpc-creation) folder and apply Terraform Destroy to delete the VPC. 
+17. Navigate to [**stage-1-vpc-creation**](Terraform/stage-1-vpc-creation) folder and apply Terraform Destroy to delete the VPC. 
 
 ```hcl 
 terraform destroy
 ```
 
-18. Delete the ALB.
+ ### Delete the ALB.
 
-The Application-Load-Balancer cannont be delete by Terraform. So delete it manually, the ALB you need to have is like the screenshot below. 
+18.The Application-Load-Balancer cannont be delete by Terraform. So delete it manually, the ALB you need to have is like the screenshot below. 
 
 <img width="1910" height="818" alt="image" src="https://github.com/user-attachments/assets/45a31f8b-7891-4f4b-ad25-25af2fb96446" />
 
-19. Delete Target groups
+ ### Delete Target groups
 
-The ALB als creates Target Groups. Those groups need to be manually deleted  ass well. Delete the Target Group just like the following example. 
+19. The ALB als creates Target Groups. Those groups need to be manually deleted  ass well. Delete the Target Group just like the following example. 
 
 <img width="1914" height="827" alt="image" src="https://github.com/user-attachments/assets/1e8c034a-9c0f-48fb-8a40-6bf0ab5b4b33" />
 
-20. Delete ALB security group.
-There are 2 security groups that you need to delete. The Screenshot belows shows wich one.
+ ### Delete ALB security group.
+20. There are 2 security groups that you need to delete. The Screenshot belows shows wich one.
 
 <img width="1651" height="67" alt="image" src="https://github.com/user-attachments/assets/92340a2c-bfbd-4dcf-9f42-4920591f6572" />
 
-21. Confirm Deletion
+### Confirm Deletion
 
-After you have done the steps above, the VPC ass well as the EKS Kubernetes cluster has being deleted. The hole RAG infrastructure is now gone on your AWS enviroment. 
+21. After you have done the steps above, the VPC ass well as the EKS Kubernetes cluster has being deleted. The hole RAG infrastructure is now gone on your AWS enviroment. 
 
 >[!WARNING]
 > Do not forget the perform the manual deletion steps by steps 3-5. Failing to do so will result that Terraform Destroy will get stuck in a destroy loop!!!
