@@ -19,6 +19,7 @@ In order to successfully apply RAG within your AWS environment, its application 
 - [ ] [AWS CLI installed](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and logged in with you AWS profile,
 - [ ] [Terraform installed](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) and configured, 
 - [ ] Installed kubectl to interact with the Kubernetes cluster,
+- [ ] OpenSSL installed to generate Self-Signed HTTPS Certificates 🔏
 
 
 For more information how to setup the above, please use the hyperlinks provided.
@@ -48,7 +49,7 @@ RAG-DEPLOYMENT-EKS-FARGATE-INFRA-S3
         └───stage-3-cluster-config
             └───k8s
                 ├───deployments
-                ├───ingress
+                
                 ├───namespaces
                 ├───secrets
                 └───services
@@ -235,13 +236,96 @@ Now go back to the cluster. Click on the **"Resources"** tab thereafter click on
 
 <img width="1506" height="710" alt="image" src="https://github.com/user-attachments/assets/1b9f9ea0-3d56-4f1c-bdc8-a1b909703343" />
 
+### Making RAG Ready for HTTPS 🔏 ✅
+Since you can upload any document to our RAG system, there may also be documents containing sensitive data. These documents must not be leaked to the outside world, as the front end is exposed on the internet. HTTPS support has been added to encrypt traffic between a client and the RAG server.
+
+The ELB (Elastic Load Balancer) will use the certificate to provide the front end with HTTPS. A self-signed certificate will be used, which means that your web browser will not trust the certificate, but the traffic will be encrypted. To apply HTTPS, follow the steps below 
+
+> [!CAUTION]
+> Please do not continue without completing the HTTPS steps, RAG will not work over HTTP ❌
+
+> [!IMPORTANT]
+> Please make sure that you have installed OpenSSL on your system.
+
+#### Creating configuration certficate file
+
+First there must be configuration file created that contains configurations of what for data need to be present in the certificate. 
+
+Please navigate to the `certificate` folder inside `stage-3-cluster-config` : 
+
+```bash
+cd .\certificate\
+```
+Next, create a file named ``rag-cert.conf`` and past the following inside the file: 
+
+```bash
+[ req ]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+distinguished_name = dn
+x509_extensions    = v3_req
+
+[ dn ]
+C  = NL
+ST = Noord-Brabant
+L  = Eindhoven
+O  = Fontys
+OU = rag
+CN = rag.local.nl
+
+[ v3_req ]
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = rag.local.nl
+``` 
+
+The above data will be saved inside the HTTPS certificate once you generates the certificate. Now you can move to the next step wich is generating the certificate.
+
+#### Generate the certificate and the private key
+
+First generate the private key for the certificate using the command below 
+
+```bash
+openssl genrsa -out rag.local.nl.key 2048
+```
+> [!IMPORTANT]
+> Never share the private key with the outside world, the private key must stay secret!!!
+
+Thereafter generate the certificate itself using the private key you just made. 
+
+```bash
+openssl req -x509 -new -key rag.local.nl.key -out rag.local.nl.pem -days 365 -config rag-cert.conf
+```
+Now you should have a private key and a pem file containing the content of the HTTPS certificate.
+To verify use the ``ls`` command in your ternimal, you should see the private key and the .pem file as a result. 
+
+```bash
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         19-1-2026     18:20           1704 rag.local.nl.key
+-a----         19-1-2026     18:22           1375 rag.local.nl.pem
+```
+
+Now navigate back to the root folder of ``stage-3-cluster-config`` with the command below:
+```bash
+cd ..
+```
+
+Now you have generates a HTTPS certificate that the ELB will use to expose the front end via HTTPS. 
+Terraform will take care of the rest and configure the ELB with HTTPS for you. 
+
 ### Configured the remaining configuration of the cluster with Terraform.
 
 The most manual work has now being done 👏🏽 now it is up to Terraform to automaticly apply the final cluster configuration. Terraform will configure the following in Stage 3:
 
-✅ Apply all Service, Ingress, and Deployments YALM files,<br>
+✅ Apply all Service, and Deployments YALM files,<br>
 ✅ Install CoreDNS for Kubernets so pods can talk to services,<br> 
 ✅ Create a Kubernetes service account (Least-Priveleges) so it can create a ALB for the front-end,
+✅ Configure the ELB to use HTTPS
 
 12. To begin the deployment apply the following command: 
 
@@ -289,61 +373,43 @@ You have know reached the front-end. congratulations 🎉 you have successfully 
 ## Stage 4: Destroy the AWS Infrastructure when you don't need RAG anymore
 There will come a time when you no longer use RAG and simply no longer need it. Hosting RAG on AWS without using it will only drive up your costs. That is why it is recommended to destroy the entire RAG environment to save costs. During the creation of the RAG environment, many components were created by Terraform. It is not realistic to remove each component one by one as this takes a lot of time. Fortunately, the removal process can be automated using Terraform.
 
-With the help of two commands, the entire RAG environment can be removed with Terraform. This chapter will show you what you need to do to remove the environment.
+With the help of 3 commands, the entire RAG environment can be removed with Terraform. This chapter will show you what you need to do to remove the environment.
 
-It is not possible to delete the whole infrastructure with one commmand. Therefor you need to apply Terraform Destroy twice, 1 time to delete the cluster and 1 time to delete the infrastructure on AWS. Some manual steps are necessary to delete some components in AWS because Terraform cannot destroy everything unfortunately. But all of this will be take care off in this chapter.  
+It is not possible to delete the whole infrastructure with one commmand. Therefor you need to apply Terraform Destroy 3 times.
 
-### Delete the cluster it self.
+16. Destroy the cluster configuration
 
-16. Navigate to [**stage-2-cluster-creation**](Terraform/stage-2-cluster-creation) folder and apply Terraform Destroy to delete the cluster. 
+``
+ stage-3-cluster-config
+``
 
-```hcl 
+```
+terraform destroy
+```
+18. Destroy the cluster itself
+     
+``
+ stage-2-cluster-creation
+``
+
+```
 terraform destroy
 ```
 
-After this you should get the following output when the cluster is done deleting. 
+20. Destroy the AWS infrastructure
 
-```hcl
-Destroy complete! Resources: 7 destroyed.
+``
+ stage-1-vpc-creating
+``
+
 ```
-
-### Destroy the infrastructure on AWS.
-
-17. Navigate to [**stage-1-vpc-creation**](Terraform/stage-1-vpc-creation) folder and apply Terraform Destroy to delete the VPC. 
-
-```hcl 
 terraform destroy
 ```
 
- ### Delete the ALB.
 
-18.The Application-Load-Balancer cannont be delete by Terraform. So delete it manually, the ALB you need to have is like the screenshot below. 
 
-<img width="1910" height="818" alt="image" src="https://github.com/user-attachments/assets/45a31f8b-7891-4f4b-ad25-25af2fb96446" />
 
- ### Delete Target groups
 
-19. The ALB als creates Target Groups. Those groups need to be manually deleted  ass well. Delete the Target Group just like the following example. 
-
-<img width="1914" height="827" alt="image" src="https://github.com/user-attachments/assets/1e8c034a-9c0f-48fb-8a40-6bf0ab5b4b33" />
-
- ### Delete ALB security group.
-20. There are 2 security groups that you need to delete. The Screenshot belows shows wich one.
-
-<img width="1651" height="67" alt="image" src="https://github.com/user-attachments/assets/92340a2c-bfbd-4dcf-9f42-4920591f6572" />
-
-### Confirm Deletion
-
-21. After you have done the steps above, the VPC ass well as the EKS Kubernetes cluster has being deleted. The hole RAG infrastructure is now gone on your AWS enviroment. 
-
->[!WARNING]
-> Do not forget the perform the manual deletion steps by steps 3-5. Failing to do so will result that Terraform Destroy will get stuck in a destroy loop!!!
-
-After Terraform is done, you will get a output back in your ternimal that 48 resources are destroyed.
-
-```hcl
-Destroy complete! Resources: 48 destroyed.
-```
 
 
 
