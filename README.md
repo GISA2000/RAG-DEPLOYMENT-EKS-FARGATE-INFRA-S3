@@ -249,7 +249,7 @@ The ELB (Elastic Load Balancer) will use the certificate to provide the front en
 
 #### Creating configuration certficate file
 
-First there must be configuration file created that containts configurations of what for data need to be present in the certificate. 
+First there must be configuration file created that contains configurations of what for data need to be present in the certificate. 
 
 Please navigate to the `certificate` folder inside `stage-3-cluster-config` : 
 
@@ -295,7 +295,7 @@ openssl genrsa -out rag.local.nl.key 2048
 > [!IMPORTANT]
 > Never share the private key with the outside world, the private key must stay secret!!!
 
-Therafter generate the certificate itself using the private key you just made. 
+Thereafter generate the certificate itself using the private key you just made. 
 
 ```bash
 openssl req -x509 -new -key rag.local.nl.key -out rag.local.nl.pem -days 365 -config rag-cert.conf
@@ -309,6 +309,12 @@ Mode                 LastWriteTime         Length Name
 -a----         19-1-2026     18:20           1704 rag.local.nl.key
 -a----         19-1-2026     18:22           1375 rag.local.nl.pem
 ```
+
+Now navigate back to the root folder of ``stage-3-cluster-config`` with the command below:
+```bash
+cd ..
+```
+
 Now you have generates a HTTPS certificate that the ELB will use to expose the front end via HTTPS. 
 Terraform will take care of the rest and configure the ELB with HTTPS for you. 
 
@@ -319,6 +325,7 @@ The most manual work has now being done 👏🏽 now it is up to Terraform to au
 ✅ Apply all Service, and Deployments YALM files,<br>
 ✅ Install CoreDNS for Kubernets so pods can talk to services,<br> 
 ✅ Create a Kubernetes service account (Least-Priveleges) so it can create a ALB for the front-end,
+✅ Configure the ELB to use HTTPS
 
 12. To begin the deployment apply the following command: 
 
