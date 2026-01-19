@@ -373,61 +373,43 @@ You have know reached the front-end. congratulations 🎉 you have successfully 
 ## Stage 4: Destroy the AWS Infrastructure when you don't need RAG anymore
 There will come a time when you no longer use RAG and simply no longer need it. Hosting RAG on AWS without using it will only drive up your costs. That is why it is recommended to destroy the entire RAG environment to save costs. During the creation of the RAG environment, many components were created by Terraform. It is not realistic to remove each component one by one as this takes a lot of time. Fortunately, the removal process can be automated using Terraform.
 
-With the help of two commands, the entire RAG environment can be removed with Terraform. This chapter will show you what you need to do to remove the environment.
+With the help of 3 commands, the entire RAG environment can be removed with Terraform. This chapter will show you what you need to do to remove the environment.
 
-It is not possible to delete the whole infrastructure with one commmand. Therefor you need to apply Terraform Destroy twice, 1 time to delete the cluster and 1 time to delete the infrastructure on AWS. Some manual steps are necessary to delete some components in AWS because Terraform cannot destroy everything unfortunately. But all of this will be take care off in this chapter.  
+It is not possible to delete the whole infrastructure with one commmand. Therefor you need to apply Terraform Destroy 3 times.
 
-### Delete the cluster it self.
+16. Destroy the cluster configuration
 
-16. Navigate to [**stage-2-cluster-creation**](Terraform/stage-2-cluster-creation) folder and apply Terraform Destroy to delete the cluster. 
+``
+ stage-3-cluster-config
+``
 
-```hcl 
+```
+terraform destroy
+```
+18. Destroy the cluster itself
+     
+``
+ stage-2-cluster-creation
+``
+
+```
 terraform destroy
 ```
 
-After this you should get the following output when the cluster is done deleting. 
+20. Destroy the AWS infrastructure
 
-```hcl
-Destroy complete! Resources: 7 destroyed.
+``
+ stage-1-vpc-creating
+``
+
 ```
-
-### Destroy the infrastructure on AWS.
-
-17. Navigate to [**stage-1-vpc-creation**](Terraform/stage-1-vpc-creation) folder and apply Terraform Destroy to delete the VPC. 
-
-```hcl 
 terraform destroy
 ```
 
- ### Delete the ALB.
 
-18.The Application-Load-Balancer cannont be delete by Terraform. So delete it manually, the ALB you need to have is like the screenshot below. 
 
-<img width="1910" height="818" alt="image" src="https://github.com/user-attachments/assets/45a31f8b-7891-4f4b-ad25-25af2fb96446" />
 
- ### Delete Target groups
 
-19. The ALB als creates Target Groups. Those groups need to be manually deleted  ass well. Delete the Target Group just like the following example. 
-
-<img width="1914" height="827" alt="image" src="https://github.com/user-attachments/assets/1e8c034a-9c0f-48fb-8a40-6bf0ab5b4b33" />
-
- ### Delete ALB security group.
-20. There are 2 security groups that you need to delete. The Screenshot belows shows wich one.
-
-<img width="1651" height="67" alt="image" src="https://github.com/user-attachments/assets/92340a2c-bfbd-4dcf-9f42-4920591f6572" />
-
-### Confirm Deletion
-
-21. After you have done the steps above, the VPC ass well as the EKS Kubernetes cluster has being deleted. The hole RAG infrastructure is now gone on your AWS enviroment. 
-
->[!WARNING]
-> Do not forget the perform the manual deletion steps by steps 3-5. Failing to do so will result that Terraform Destroy will get stuck in a destroy loop!!!
-
-After Terraform is done, you will get a output back in your ternimal that 48 resources are destroyed.
-
-```hcl
-Destroy complete! Resources: 48 destroyed.
-```
 
 
 
