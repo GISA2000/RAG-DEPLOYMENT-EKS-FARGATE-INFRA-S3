@@ -27,17 +27,7 @@ resource "kubernetes_manifest" "services" {
                  kubernetes_manifest.deployments ]
 }
 
-resource "kubernetes_manifest" "ingress" {
-  for_each = fileset("${path.module}/k8s/ingress", "*.yaml")
 
-  manifest = yamldecode(
-    file("${path.module}/k8s/ingress/${each.value}")
-  )
-
-  depends_on = [ kubernetes_service_account_v1.aws_lb_controller_service_account,
-                 aws_eks_addon.coredns,
-                 kubernetes_manifest.services]
-}
 
 
 
