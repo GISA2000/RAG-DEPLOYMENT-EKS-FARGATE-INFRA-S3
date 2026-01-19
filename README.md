@@ -19,6 +19,7 @@ In order to successfully apply RAG within your AWS environment, its application 
 - [ ] [AWS CLI installed](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and logged in with you AWS profile,
 - [ ] [Terraform installed](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) and configured, 
 - [ ] Installed kubectl to interact with the Kubernetes cluster,
+- [ ] OpenSSL installed to generate Self-Signed HTTPS Certificates 🔏
 
 
 For more information how to setup the above, please use the hyperlinks provided.
@@ -48,7 +49,7 @@ RAG-DEPLOYMENT-EKS-FARGATE-INFRA-S3
         └───stage-3-cluster-config
             └───k8s
                 ├───deployments
-                ├───ingress
+                
                 ├───namespaces
                 ├───secrets
                 └───services
@@ -235,11 +236,87 @@ Now go back to the cluster. Click on the **"Resources"** tab thereafter click on
 
 <img width="1506" height="710" alt="image" src="https://github.com/user-attachments/assets/1b9f9ea0-3d56-4f1c-bdc8-a1b909703343" />
 
+### Making RAG Ready for HTTPS 🔏 ✅
+Since you can upload any document to our RAG system, there may also be documents containing sensitive data. These documents must not be leaked to the outside world, as the front end is exposed on the internet. HTTPS support has been added to encrypt traffic between a client and the RAG server.
+
+The ELB (Elastic Load Balancer) will use the certificate to provide the front end with HTTPS. A self-signed certificate will be used, which means that your web browser will not trust the certificate, but the traffic will be encrypted. To apply HTTPS, follow the steps below 
+
+> [!CAUTION]
+> Please do not continue without completing the HTTPS steps, RAG will not work over HTTP ❌
+
+> [!IMPORTANT]
+> Please make sure that you have installed OpenSSL on your system.
+
+#### Creating configuration certficate file
+
+First there must be configuration file created that containts configurations of what for data need to be present in the certificate. 
+
+Please navigate to the `certificate` folder inside `stage-3-cluster-config` : 
+
+```bash
+cd .\certificate\
+```
+Next, create a file named ``rag-cert.conf`` and past the following inside the file: 
+
+```bash
+[ req ]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+distinguished_name = dn
+x509_extensions    = v3_req
+
+[ dn ]
+C  = NL
+ST = Noord-Brabant
+L  = Eindhoven
+O  = Fontys
+OU = rag
+CN = rag.local.nl
+
+[ v3_req ]
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = rag.local.nl
+``` 
+
+The above data will be saved inside the HTTPS certificate once you generates the certificate. Now you can move to the next step wich is generating the certificate.
+
+#### Generate the certificate and the private key
+
+First generate the private key for the certificate using the command below 
+
+```bash
+openssl genrsa -out rag.local.nl.key 2048
+```
+> [!IMPORTANT]
+> Never share the private key with the outside world, the private key must stay secret!!!
+
+Therafter generate the certificate itself using the private key you just made. 
+
+```bash
+openssl req -x509 -new -key rag.local.nl.key -out rag.local.nl.pem -days 365 -config rag-cert.conf
+```
+Now you should have a private key and a pem file containing the content of the HTTPS certificate.
+To verify use the ``ls`` command in your ternimal, you should see the private key and the .pem file as a result. 
+
+```bash
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         19-1-2026     18:20           1704 rag.local.nl.key
+-a----         19-1-2026     18:22           1375 rag.local.nl.pem
+```
+Now you have generates a HTTPS certificate that the ELB will use to expose the front end via HTTPS. 
+Terraform will take care of the rest and configure the ELB with HTTPS for you. 
+
 ### Configured the remaining configuration of the cluster with Terraform.
 
 The most manual work has now being done 👏🏽 now it is up to Terraform to automaticly apply the final cluster configuration. Terraform will configure the following in Stage 3:
 
-✅ Apply all Service, Ingress, and Deployments YALM files,<br>
+✅ Apply all Service, and Deployments YALM files,<br>
 ✅ Install CoreDNS for Kubernets so pods can talk to services,<br> 
 ✅ Create a Kubernetes service account (Least-Priveleges) so it can create a ALB for the front-end,
 
