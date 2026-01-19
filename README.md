@@ -19,7 +19,7 @@ In order to successfully apply RAG within your AWS environment, its application 
 - [ ] [AWS CLI installed](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and logged in with you AWS profile,
 - [ ] [Terraform installed](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) and configured, 
 - [ ] Installed kubectl to interact with the Kubernetes cluster,
-- [ ] [Helm installed](https://helm.sh/docs/intro/install/) to install Kubernetes packages,
+
 
 For more information how to setup the above, please use the hyperlinks provided.
 
@@ -165,51 +165,6 @@ kubernetes   ClusterIP   your cluster ip   <none>        443/TCP   44m
 > If the command above fails, make sure that that you are logged in with your AWS account and that Kubectl is installed on your machine.
 
 ## Chapter 3 Cluster configuration
-
-### Install the AWS Load-Balancer-Controller
-
-9. Next the Load-Balencer-controller must be installed on the cluster it self.
-
-The Load-Balencer-controller will act like a proxy for the front-end to securly expose the chatbot to the internet. This way Fargate pods can stay in private subnets for security isolation. To install the Load-Balencer-controller the Kubernets package manager **"helm"**
-must be used. But first use the command below to add the EKS github repository to your system. 
-
-> [!IMPORTANT]
-> Also make sure that helm in installed on your system! Without this you can not install the Load-Balencer-Controller 
-
-```bash
-helm repo add eks https://aws.github.io/eks-charts
-```
-
-After this update the repo with the folling command.
-```bash
-helm repo update 
-```
-
-Now install the Load-Balencer-controller. 
-```bash
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=rag_eks_fargate_cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set vpcId=your-vpc-id 
-```
-
-> [!NOTE]
-> "place the VPC id in the "vpcId parameter". The VPC ID can be found in the AWS Managemnt console by **"VPC>YOUR VPCs"**.
-
-After the  Load-Balencer-Controller is successfully installed you will get the output below.
-
-```bash
-NAME: aws-load-balancer-controller
-LAST DEPLOYED: Sat Jan 17 17:37:32 2026
-NAMESPACE: kube-system
-STATUS: deployed
-REVISION: 1
-DESCRIPTION: Install complete
-TEST SUITE: None
-NOTES:
-AWS Load Balancer controller installed!
-```
-Now EKS/Fargate should create a pod and apply the  Load-Balencer-Controller on the cluster. 
-To verify navigate back to the cluster and go to the **Resources** tab and click on **Deployments**. You must see the controller now like the example below you. 
-
-<img width="1181" height="318" alt="image" src="https://github.com/user-attachments/assets/72f7811a-af6d-4baa-a8ce-7ab602a30985" />
 
   ### Import Kubernetes Secret to the cluster. 
 
