@@ -258,7 +258,7 @@ Please navigate to the `certificate` folder inside `stage-3-cluster-config` :
 ```bash
 cd .\certificate\
 ```
-Next, create a file named ``rag-cert.conf`` and past the following inside the file: 
+Next, create a file named ``rag-cert.conf`` paste the following inside the file: 
 
 ```bash
 [ req ]
