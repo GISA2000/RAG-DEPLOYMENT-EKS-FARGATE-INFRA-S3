@@ -1,3 +1,5 @@
+author readme: Giovanni Sanders
+
 # RAG-DEPLOYMENT-EKS-FARGATE-INFRA-S3
 
 Retrieval-augmented generation (RAG) is a way for AI to retrieve data from external sources and provide relevant information to the user based on that data. 
