@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rag-api
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rag-frontend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rag-monitoring
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rag-workers
+
+
+

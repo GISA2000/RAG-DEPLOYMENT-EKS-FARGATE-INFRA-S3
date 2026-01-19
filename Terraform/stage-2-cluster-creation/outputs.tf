@@ -14,3 +14,4 @@ output "alb_irsa_role" {
   description = "IAM role ARN for AWS Load Balancer Controller (IRSA)"
   value = aws_iam_role.alb_irsa_role.arn
 }
+
