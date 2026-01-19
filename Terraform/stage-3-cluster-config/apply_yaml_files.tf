@@ -1,6 +1,6 @@
 # Ads automaticly all namespaces to the cluster that are saved in the YAML files.
 resource "time_sleep" "wait_for_alb_webhook" {
-  create_duration = "300s"
+  create_duration = "30s"
   depends_on = [ helm_release.aws_load_balancer_controller ]
 }
 

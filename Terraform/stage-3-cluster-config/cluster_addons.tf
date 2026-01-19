@@ -4,6 +4,8 @@ resource "aws_eks_addon" "coredns" {
   addon_name = "coredns"
   resolve_conflicts_on_create = "OVERWRITE"
   addon_version = var.coredns_version
- 
+ depends_on = [ 
+  helm_release.aws_load_balancer_controller
+  ]
 }
 
