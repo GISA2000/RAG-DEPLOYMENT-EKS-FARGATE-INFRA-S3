@@ -1,4 +1,4 @@
-author readme: Giovanni Sanders
+©️ Giovanni Sanders
 
 # RAG-DEPLOYMENT-EKS-FARGATE-INFRA-S3
 
