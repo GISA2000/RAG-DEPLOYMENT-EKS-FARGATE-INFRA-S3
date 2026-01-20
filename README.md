@@ -388,7 +388,7 @@ It is not possible to delete the whole infrastructure with one commmand. Therefo
 ```
 terraform destroy
 ```
-18. Destroy the cluster itself
+17. Destroy the cluster itself
      
 ``
  stage-2-cluster-creation
@@ -398,7 +398,7 @@ terraform destroy
 terraform destroy
 ```
 
-20. Destroy the AWS infrastructure
+18. Destroy the AWS infrastructure
 
 ``
  stage-1-vpc-creating
