@@ -148,7 +148,7 @@ Now this is configured, you have the necessary rights to view kubernetes objects
 
 ### Connect to the EKS Kubernetes cluster using the CLI 
 
-To do so make sure that in your ternimal session you are logged in with your AWS account and performing the following command to connect to the cluster
+To do so make sure that in your ternimal session you are logged in with your AWS account and perform the following command to connect to the cluster
 
 ```bash
 aws eks update-kubeconfig --region eu-central-1 --name rag_eks_fargate_cluster 
