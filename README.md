@@ -16,7 +16,7 @@ At the end of this instruction, you will have the following that you can use:
 
 ## prerequisite for deployment RAG on AWS
 
-In order to successfully apply RAG within your AWS environment, its application has been divided into the stages below. Each stage must be completed in order for the RAG Chatbot to become functional. Make sure you have the following before you start applying RAG, otherwise you will not be able to follow the steps in these instructions. 
+In order to successfully apply RAG within your AWS environment, its application has been divided into the 3 stages below. Each stage must be completed in order for the RAG Chatbot to become functional. Make sure you have the following before you start applying RAG, otherwise you will not be able to follow the steps in these instructions. 
 
 - [ ] [AWS CLI installed](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) and logged in with you AWS profile,
 - [ ] [Terraform installed](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) and configured, 
